@@ -1,0 +1,34 @@
+http_addr: ":8080"
+serial:
+  port: "/dev/ttyUSB0"
+  baud_rate: 19200
+  data_bits: 8
+  parity: "N"
+  stop_bits: 1
+  timeout_ms: 1000
+slaves:
+  - id: 1
+    name: "Tank-A"
+    poll_interval_ms: 1000
+    level_register_addr: 30001
+    start_coil_addr: 1
+    stop_coil_addr: 2
+  - id: 2
+    name: "Tank-B"
+    poll_interval_ms: 1000
+    level_register_addr: 30001
+    start_coil_addr: 1
+    stop_coil_addr: 2
+  - id: 3
+    name: "Tank-C"
+    poll_interval_ms: 1000
+    level_register_addr: 30001
+    start_coil_addr: 1
+    stop_coil_addr: 2
+influx:
+  url: "http://influxdb:8086"
+  token: "local-dev-token"
+  org: "org"
+  bucket: "metrics"
+postgres:
+  dsn: "postgres://app:app12345@postgres:5432/appdb?sslmode=disable"
