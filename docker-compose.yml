@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    image: modbus-rtu-server:latest
+    container_name: modbus-rtu-app
+    environment:
+      - APP_ADDR=:8080
+    depends_on:
+      - influxdb
+      - postgres
+    networks:
+      - backend
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin12345
+      - DOCKER_INFLUXDB_INIT_ORG=org
+      - DOCKER_INFLUXDB_INIT_BUCKET=metrics
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=local-dev-token
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    ports:
+      - "8086:8086"
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app12345
+      - POSTGRES_DB=appdb
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: caddy
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - app
+    networks:
+      - backend
+
+volumes:
+  influxdb-data: {}
+  pg-data: {}
+
+networks:
+  backend: {}

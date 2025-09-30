@@ -1,0 +1,10 @@
+:80 {
+	encode gzip
+	log
+	handle /healthz {
+		reverse_proxy app:8080
+	}
+	handle {
+		reverse_proxy app:8080
+	}
+}
